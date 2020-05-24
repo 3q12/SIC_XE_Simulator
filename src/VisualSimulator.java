@@ -1,5 +1,3 @@
-package SP20_simulator;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -83,29 +81,29 @@ public class VisualSimulator extends JFrame {
 
         JButton openFileBtn = new JButton("open");
         openFileBtn.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent arg0) {
-        	    Frame f = new Frame("Parent");
-    			// 1. FileDialog를 열어 불러올 파일 지정
-    			FileDialog dialog = new FileDialog(f, "열기", FileDialog.LOAD);
-    			dialog.setDirectory(".");
-    			dialog.setVisible(true);
-    			// 2. FileDialog가 비정상 종료되었을때
+            public void actionPerformed(ActionEvent arg0) {
+                Frame f = new Frame("Parent");
+                // 1. FileDialog를 열어 불러올 파일 지정
+                FileDialog dialog = new FileDialog(f, "열기", FileDialog.LOAD);
+                dialog.setDirectory(".");
+                dialog.setVisible(true);
+                // 2. FileDialog가 비정상 종료되었을때
 
-    			if(dialog.getFile() == null) return;
+                if (dialog.getFile() == null) return;
 
-    			// 3. 파일 열기, TextArea에 뿌려주기
+                // 3. 파일 열기, TextArea에 뿌려주기
 
-    			try {
+                try {
                     String dfName = dialog.getDirectory() + dialog.getFile();
                     File program = new File(dfName);
                     load(program);
-    			} catch (Exception e2) {
-    				JOptionPane.showMessageDialog(f, "열기 오류");
-    			}
+                } catch (Exception e2) {
+                    JOptionPane.showMessageDialog(f, "열기 오류");
+                }
                 // 4. 파일명 표시하기
                 FilePath.setText(dialog.getFile());
                 setTitle(dialog.getFile());
-    		}
+            }
         });
         openFileBtn.setBounds(206, 17, 68, 23);
         contentPane.add(openFileBtn);
@@ -389,27 +387,27 @@ public class VisualSimulator extends JFrame {
 
         JButton run1StepBtn = new JButton("실행(1step)");
         run1StepBtn.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        	    oneStep();
-        	}
+            public void actionPerformed(ActionEvent e) {
+                oneStep();
+            }
         });
         run1StepBtn.setBounds(354, 334, 100, 23);
         contentPane.add(run1StepBtn);
 
         JButton runAllBtn = new JButton("실행(all)");
         runAllBtn.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        	    allStep();
-        	}
+            public void actionPerformed(ActionEvent e) {
+                allStep();
+            }
         });
         runAllBtn.setBounds(354, 362, 100, 23);
         contentPane.add(runAllBtn);
 
         JButton closeBtn = new JButton("종료");
         closeBtn.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        	    System.exit(0);
-        	}
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
         });
         closeBtn.setBounds(354, 390, 100, 23);
         contentPane.add(closeBtn);
