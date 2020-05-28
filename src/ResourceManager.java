@@ -34,13 +34,22 @@ public class ResourceManager {
     double register_F;
 
     SymbolTable symtabList;
+    String programName;
+    int startAddr;
+    int programLength;
+    int memCur;
     // 이외에도 필요한 변수 선언해서 사용할 것.
 
     /**
      * 메모리, 레지스터등 가상 리소스들을 초기화한다.
      */
     public void initializeResource() {
-
+        register_F = 0;
+        symtabList = new SymbolTable();
+        programName = "";
+        startAddr = 0;
+        programLength = 0;
+        memCur = 0;
     }
 
     /**
@@ -92,8 +101,12 @@ public class ResourceManager {
      * @return 가져오는 데이터
      */
     public char[] getMemory(int location, int num) {
-        return null;
+        String retValue = "";
+/*        for(int i = 0; i<num;i++){
+            retValue+=this.memory[location+i];
+        }*/
 
+        return retValue.toCharArray();
     }
 
     /**

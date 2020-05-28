@@ -9,6 +9,10 @@ public class SymbolTable {
     ArrayList<Integer> addressList;
     // 기타 literal, external 선언 및 처리방법을 구현한다.
 
+    public SymbolTable(){
+        symbolList = new ArrayList<String>();
+        addressList = new ArrayList<Integer>();
+    }
 
     /**
      * 새로운 Symbol을 table에 추가한다.

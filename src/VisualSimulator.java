@@ -13,14 +13,25 @@ public class VisualSimulator extends JFrame {
     ResourceManager resourceManager = new ResourceManager();
     SicLoader sicLoader = new SicLoader(resourceManager);
     SicSimulator sicSimulator = new SicSimulator(resourceManager);
-    private JTextField FilePath;
-
+    private JPanel HRec;
+    private JPanel ERec;
+    private JTextPane programName;
+    private  JTextPane objStartAddr;
+    private JTextPane programLen;
+    private JTextPane firstInstAddr;
+    private JTextPane startAddrInMem;
     /**
      * 프로그램 로드 명령을 전달한다.
      */
     public void load(File program) {
+        resourceManager.initializeResource();
         sicLoader.load(program);
         sicSimulator.load(program);
+        programName.setText(resourceManager.programName);
+        objStartAddr.setText(String.format("%06X",resourceManager.startAddr));
+        programLen.setText(String.format("%X",resourceManager.programLength));
+        firstInstAddr.setText("000000");
+        startAddrInMem.setText("0");
     }
 
     ;
@@ -47,7 +58,6 @@ public class VisualSimulator extends JFrame {
      * 화면을 최신값으로 갱신하는 역할을 수행한다.
      */
     public void update() {
-
     }
 
     ;
@@ -79,6 +89,7 @@ public class VisualSimulator extends JFrame {
         setContentPane(contentPane);
         contentPane.setLayout(null);
 
+        JTextField FilePath = new JTextField();
         JButton openFileBtn = new JButton("open");
         openFileBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
@@ -98,7 +109,7 @@ public class VisualSimulator extends JFrame {
                     File program = new File(dfName);
                     load(program);
                 } catch (Exception e2) {
-                    JOptionPane.showMessageDialog(f, "열기 오류");
+                    JOptionPane.showMessageDialog(f, "열기 오류" + e2.getMessage());
                 }
                 // 4. 파일명 표시하기
                 FilePath.setText(dialog.getFile());
@@ -108,7 +119,7 @@ public class VisualSimulator extends JFrame {
         openFileBtn.setBounds(206, 17, 68, 23);
         contentPane.add(openFileBtn);
 
-        FilePath = new JTextField();
+
         FilePath.setEditable(false);
         FilePath.setBounds(78, 17, 116, 23);
         contentPane.add(FilePath);
@@ -118,7 +129,7 @@ public class VisualSimulator extends JFrame {
         FileNameLabel.setBounds(12, 21, 73, 15);
         contentPane.add(FileNameLabel);
 
-        JPanel HRec = new JPanel();
+        HRec = new JPanel();
         HRec.setBorder(new TitledBorder(null, "H (Header Record)", TitledBorder.LEADING, TitledBorder.TOP, null, null));
         HRec.setToolTipText("");
         HRec.setBounds(12, 50, 215, 113);
@@ -130,7 +141,7 @@ public class VisualSimulator extends JFrame {
         HRec.add(ProgramNameLabel);
 
         JLabel StartAddressLabel = new JLabel("Object Program:");
-        StartAddressLabel.setBounds(16, 63, 92, 15);
+        StartAddressLabel.setBounds(16, 63, 95, 15);
         HRec.add(StartAddressLabel);
 
         JLabel ProgramLengthLabel = new JLabel("Length of Program: ");
@@ -138,31 +149,31 @@ public class VisualSimulator extends JFrame {
         HRec.add(ProgramLengthLabel);
 
         JLabel StartAddressLabel0 = new JLabel("Start Address of");
-        StartAddressLabel0.setBounds(16, 47, 92, 15);
+        StartAddressLabel0.setBounds(16, 47, 95, 15);
         HRec.add(StartAddressLabel0);
 
-        JTextPane programName = new JTextPane();
+        programName = new JTextPane();
         programName.setBorder(new LineBorder(UIManager.getColor("Button.shadow")));
         programName.setEditable(false);
         programName.setBackground(UIManager.getColor("CheckBox.background"));
         programName.setBounds(120, 22, 83, 18);
         HRec.add(programName);
 
-        JTextPane objStartAddr = new JTextPane();
+        objStartAddr = new JTextPane();
         objStartAddr.setEditable(false);
         objStartAddr.setBorder(new LineBorder(UIManager.getColor("Button.shadow")));
         objStartAddr.setBackground(SystemColor.menu);
         objStartAddr.setBounds(120, 60, 83, 18);
         HRec.add(objStartAddr);
 
-        JTextPane programLen = new JTextPane();
+        programLen = new JTextPane();
         programLen.setEditable(false);
         programLen.setBorder(new LineBorder(UIManager.getColor("Button.shadow")));
         programLen.setBackground(SystemColor.menu);
         programLen.setBounds(130, 86, 73, 18);
         HRec.add(programLen);
 
-        JPanel ERec = new JPanel();
+        ERec = new JPanel();
         ERec.setToolTipText("");
         ERec.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "E (End Record)", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
         ERec.setBounds(239, 50, 215, 60);
@@ -173,7 +184,7 @@ public class VisualSimulator extends JFrame {
         FirstInstLabel1.setBounds(16, 38, 110, 15);
         ERec.add(FirstInstLabel1);
 
-        JTextPane firstInstAddr = new JTextPane();
+        firstInstAddr = new JTextPane();
         firstInstAddr.setEditable(false);
         firstInstAddr.setBorder(new LineBorder(UIManager.getColor("Button.shadow")));
         firstInstAddr.setBackground(SystemColor.menu);
@@ -188,7 +199,7 @@ public class VisualSimulator extends JFrame {
         StartAddrLabel.setBounds(239, 111, 150, 15);
         contentPane.add(StartAddrLabel);
 
-        JTextPane startAddrInMem = new JTextPane();
+        startAddrInMem = new JTextPane();
         startAddrInMem.setEditable(false);
         startAddrInMem.setBorder(new LineBorder(UIManager.getColor("Button.shadow")));
         startAddrInMem.setBackground(SystemColor.menu);
