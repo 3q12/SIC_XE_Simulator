@@ -9,17 +9,35 @@ import java.awt.event.ActionEvent;
 
 public class VisualSimulator extends JFrame {
 
-    private JPanel contentPane;
     ResourceManager resourceManager = new ResourceManager();
     SicLoader sicLoader = new SicLoader(resourceManager);
+    private JTextArea logs;
+    private List instructions;
     SicSimulator sicSimulator = new SicSimulator(resourceManager);
-    private JPanel HRec;
-    private JPanel ERec;
-    private JTextPane programName;
-    private  JTextPane objStartAddr;
-    private JTextPane programLen;
-    private JTextPane firstInstAddr;
-    private JTextPane startAddrInMem;
+    private final JTextPane programName;
+    private final JTextPane objStartAddr;
+    private final JTextPane programLen;
+    private final JTextPane firstInstAddr;
+    private final JTextPane startAddrInMem;
+    private final JTextPane aRegHex;
+    private final JTextPane aRegDec;
+    private final JTextPane xRegHex;
+    private final JTextPane xRegDec;
+    private final JTextPane lRegHex;
+    private final JTextPane lRegDec;
+    private final JTextPane bRegHex;
+    private final JTextPane bRegDec;
+    private final JTextPane sRegHex;
+    private final JTextPane sRegDec;
+    private final JTextPane tRegHex;
+    private final JTextPane tRegDec;
+    private final JTextPane fReg;
+    private final JTextPane pcRegHex;
+    private final JTextPane pcRegDec;
+    private final JTextPane swReg;
+    private final JButton run1StepBtn;
+    private final JButton runAllBtn;
+
     /**
      * 프로그램 로드 명령을 전달한다.
      */
@@ -28,10 +46,15 @@ public class VisualSimulator extends JFrame {
         sicLoader.load(program);
         sicSimulator.load(program);
         programName.setText(resourceManager.programName);
-        objStartAddr.setText(String.format("%06X",resourceManager.startAddr));
-        programLen.setText(String.format("%X",resourceManager.programLength));
+        objStartAddr.setText(String.format("%06X", resourceManager.startAddr));
+        programLen.setText(String.format("%X", resourceManager.programLength));
         firstInstAddr.setText("000000");
         startAddrInMem.setText("0");
+        update();
+        instructions.removeAll();
+        logs.removeAll();
+        run1StepBtn.setEnabled(true);
+        runAllBtn.setEnabled(true);
     }
 
     ;
@@ -40,6 +63,7 @@ public class VisualSimulator extends JFrame {
      * 하나의 명령어만 수행할 것을 SicSimulator에 요청한다.
      */
     public void oneStep() {
+        while (!sicSimulator.oneStep()) ;
         update();
     }
 
@@ -49,6 +73,7 @@ public class VisualSimulator extends JFrame {
      * 남아있는 모든 명령어를 수행할 것을 SicSimulator에 요청한다.
      */
     public void allStep() {
+        sicSimulator.allStep();
         update();
     }
 
@@ -58,6 +83,42 @@ public class VisualSimulator extends JFrame {
      * 화면을 최신값으로 갱신하는 역할을 수행한다.
      */
     public void update() {
+        aRegHex.setText(String.format("%06X", resourceManager.register[0]));
+        aRegDec.setText(String.format("%d", resourceManager.register[0]));
+        xRegHex.setText(String.format("%06X", resourceManager.register[1]));
+        xRegDec.setText(String.format("%d", resourceManager.register[1]));
+        lRegHex.setText(String.format("%06X", resourceManager.register[2]));
+        lRegDec.setText(String.format("%d", resourceManager.register[2]));
+        bRegHex.setText(String.format("%06X", resourceManager.register[3]));
+        bRegDec.setText(String.format("%d", resourceManager.register[3]));
+        sRegHex.setText(String.format("%06X", resourceManager.register[4]));
+        sRegDec.setText(String.format("%d", resourceManager.register[4]));
+        tRegHex.setText(String.format("%06X", resourceManager.register[5]));
+        tRegDec.setText(String.format("%d", resourceManager.register[5]));
+        fReg.setText(String.format("%f", resourceManager.register_F));
+        pcRegHex.setText(String.format("%06X", resourceManager.register[8]));
+        pcRegDec.setText(String.format("%d", resourceManager.register[8]));
+        swReg.setText(String.format("%06X", resourceManager.register[9]));
+        if (sicSimulator.getLog().size() == 1)
+            logs.append(sicSimulator.getLog().get(0));
+        else
+            for (int i = 0; i < sicSimulator.getLog().size(); i++)
+                logs.append(sicSimulator.getLog().get(i));
+
+        if (sicSimulator.getInstructions().size() == 1) {
+            instructions.add(sicSimulator.getInstructions().get(0));
+            if (sicSimulator.getInstructions().get(0).equals("3E2000")) {
+                run1StepBtn.setEnabled(false);
+                runAllBtn.setEnabled(false);
+            }
+        } else {
+            for (int i = 0; i < sicSimulator.getInstructions().size(); i++)
+                instructions.add(sicSimulator.getInstructions().get(i));
+            run1StepBtn.setEnabled(false);
+            runAllBtn.setEnabled(false);
+        }
+        sicSimulator.getLog().clear();
+        sicSimulator.getInstructions().clear();
     }
 
     ;
@@ -84,7 +145,7 @@ public class VisualSimulator extends JFrame {
     public VisualSimulator() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 486, 648);
-        contentPane = new JPanel();
+        JPanel contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         setContentPane(contentPane);
         contentPane.setLayout(null);
@@ -129,7 +190,7 @@ public class VisualSimulator extends JFrame {
         FileNameLabel.setBounds(12, 21, 73, 15);
         contentPane.add(FileNameLabel);
 
-        HRec = new JPanel();
+        JPanel HRec = new JPanel();
         HRec.setBorder(new TitledBorder(null, "H (Header Record)", TitledBorder.LEADING, TitledBorder.TOP, null, null));
         HRec.setToolTipText("");
         HRec.setBounds(12, 50, 215, 113);
@@ -173,7 +234,7 @@ public class VisualSimulator extends JFrame {
         programLen.setBounds(130, 86, 73, 18);
         HRec.add(programLen);
 
-        ERec = new JPanel();
+        JPanel ERec = new JPanel();
         ERec.setToolTipText("");
         ERec.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "E (End Record)", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
         ERec.setBounds(239, 50, 215, 60);
@@ -217,14 +278,14 @@ public class VisualSimulator extends JFrame {
         ALabel.setBounds(12, 41, 37, 15);
         Register.add(ALabel);
 
-        JTextPane aRegHex = new JTextPane();
+        aRegHex = new JTextPane();
         aRegHex.setEditable(false);
         aRegHex.setBorder(new LineBorder(UIManager.getColor("Button.shadow")));
         aRegHex.setBackground(SystemColor.menu);
         aRegHex.setBounds(134, 40, 65, 18);
         Register.add(aRegHex);
 
-        JTextPane aRegDec = new JTextPane();
+        aRegDec = new JTextPane();
         aRegDec.setEditable(false);
         aRegDec.setBorder(new LineBorder(UIManager.getColor("Button.shadow")));
         aRegDec.setBackground(SystemColor.menu);
@@ -243,14 +304,14 @@ public class VisualSimulator extends JFrame {
         XLabel.setBounds(12, 62, 37, 15);
         Register.add(XLabel);
 
-        JTextPane xRegDec = new JTextPane();
+        xRegDec = new JTextPane();
         xRegDec.setEditable(false);
         xRegDec.setBorder(new LineBorder(UIManager.getColor("Button.shadow")));
         xRegDec.setBackground(SystemColor.menu);
         xRegDec.setBounds(57, 61, 65, 18);
         Register.add(xRegDec);
 
-        JTextPane xRegHex = new JTextPane();
+        xRegHex = new JTextPane();
         xRegHex.setEditable(false);
         xRegHex.setBorder(new LineBorder(UIManager.getColor("Button.shadow")));
         xRegHex.setBackground(SystemColor.menu);
@@ -261,14 +322,14 @@ public class VisualSimulator extends JFrame {
         LLabel.setBounds(12, 84, 37, 15);
         Register.add(LLabel);
 
-        JTextPane lRegDec = new JTextPane();
+        lRegDec = new JTextPane();
         lRegDec.setEditable(false);
         lRegDec.setBorder(new LineBorder(UIManager.getColor("Button.shadow")));
         lRegDec.setBackground(SystemColor.menu);
         lRegDec.setBounds(57, 83, 65, 18);
         Register.add(lRegDec);
 
-        JTextPane lRegHex = new JTextPane();
+        lRegHex = new JTextPane();
         lRegHex.setEditable(false);
         lRegHex.setBorder(new LineBorder(UIManager.getColor("Button.shadow")));
         lRegHex.setBackground(SystemColor.menu);
@@ -279,14 +340,14 @@ public class VisualSimulator extends JFrame {
         BLabel.setBounds(12, 106, 37, 15);
         Register.add(BLabel);
 
-        JTextPane bRegDec = new JTextPane();
+        bRegDec = new JTextPane();
         bRegDec.setEditable(false);
         bRegDec.setBorder(new LineBorder(UIManager.getColor("Button.shadow")));
         bRegDec.setBackground(SystemColor.menu);
         bRegDec.setBounds(57, 105, 65, 18);
         Register.add(bRegDec);
 
-        JTextPane bRegHex = new JTextPane();
+        bRegHex = new JTextPane();
         bRegHex.setEditable(false);
         bRegHex.setBorder(new LineBorder(UIManager.getColor("Button.shadow")));
         bRegHex.setBackground(SystemColor.menu);
@@ -297,14 +358,14 @@ public class VisualSimulator extends JFrame {
         SLabel.setBounds(12, 129, 37, 15);
         Register.add(SLabel);
 
-        JTextPane sRegDec = new JTextPane();
+        sRegDec = new JTextPane();
         sRegDec.setEditable(false);
         sRegDec.setBorder(new LineBorder(UIManager.getColor("Button.shadow")));
         sRegDec.setBackground(SystemColor.menu);
         sRegDec.setBounds(57, 128, 65, 18);
         Register.add(sRegDec);
 
-        JTextPane sRegHex = new JTextPane();
+        sRegHex = new JTextPane();
         sRegHex.setEditable(false);
         sRegHex.setBorder(new LineBorder(UIManager.getColor("Button.shadow")));
         sRegHex.setBackground(SystemColor.menu);
@@ -315,14 +376,14 @@ public class VisualSimulator extends JFrame {
         TLabel.setBounds(12, 150, 37, 15);
         Register.add(TLabel);
 
-        JTextPane tRegDec = new JTextPane();
+        tRegDec = new JTextPane();
         tRegDec.setEditable(false);
         tRegDec.setBorder(new LineBorder(UIManager.getColor("Button.shadow")));
         tRegDec.setBackground(SystemColor.menu);
         tRegDec.setBounds(57, 149, 65, 18);
         Register.add(tRegDec);
 
-        JTextPane tRegHex = new JTextPane();
+        tRegHex = new JTextPane();
         tRegHex.setEditable(false);
         tRegHex.setBorder(new LineBorder(UIManager.getColor("Button.shadow")));
         tRegHex.setBackground(SystemColor.menu);
@@ -333,7 +394,7 @@ public class VisualSimulator extends JFrame {
         FLabel.setBounds(12, 173, 37, 15);
         Register.add(FLabel);
 
-        JTextPane fReg = new JTextPane();
+        fReg = new JTextPane();
         fReg.setEditable(false);
         fReg.setBorder(new LineBorder(UIManager.getColor("Button.shadow")));
         fReg.setBackground(SystemColor.menu);
@@ -344,14 +405,14 @@ public class VisualSimulator extends JFrame {
         PCLabel.setBounds(12, 195, 40, 15);
         Register.add(PCLabel);
 
-        JTextPane pcRegDec = new JTextPane();
+        pcRegDec = new JTextPane();
         pcRegDec.setEditable(false);
         pcRegDec.setBorder(new LineBorder(UIManager.getColor("Button.shadow")));
         pcRegDec.setBackground(SystemColor.menu);
         pcRegDec.setBounds(57, 194, 65, 18);
         Register.add(pcRegDec);
 
-        JTextPane pcRegHex = new JTextPane();
+        pcRegHex = new JTextPane();
         pcRegHex.setEditable(false);
         pcRegHex.setBorder(new LineBorder(UIManager.getColor("Button.shadow")));
         pcRegHex.setBackground(SystemColor.menu);
@@ -362,7 +423,7 @@ public class VisualSimulator extends JFrame {
         SWLabel.setBounds(12, 217, 40, 15);
         Register.add(SWLabel);
 
-        JTextPane swReg = new JTextPane();
+        swReg = new JTextPane();
         swReg.setEditable(false);
         swReg.setBorder(new LineBorder(UIManager.getColor("Button.shadow")));
         swReg.setBackground(SystemColor.menu);
@@ -373,9 +434,11 @@ public class VisualSimulator extends JFrame {
         LogLabel.setBounds(12, 437, 136, 15);
         contentPane.add(LogLabel);
 
-        JTextArea logs = new JTextArea();
-        logs.setBounds(12, 462, 446, 137);
-        contentPane.add(logs);
+        logs = new JTextArea();
+        JScrollPane scrollPane = new JScrollPane(logs);
+        scrollPane.setBounds(12, 462, 446, 137);
+        scrollPane.setVisible(true);
+        contentPane.add(scrollPane);
 
         JTextPane targetAddr = new JTextPane();
         targetAddr.setEditable(false);
@@ -392,11 +455,11 @@ public class VisualSimulator extends JFrame {
         InstructionsLabel.setBounds(239, 206, 73, 15);
         contentPane.add(InstructionsLabel);
 
-        List instructions = new List();
+        instructions = new List();
         instructions.setBounds(239, 227, 110, 198);
         contentPane.add(instructions);
 
-        JButton run1StepBtn = new JButton("실행(1step)");
+        run1StepBtn = new JButton("실행(1step)");
         run1StepBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 oneStep();
@@ -405,7 +468,7 @@ public class VisualSimulator extends JFrame {
         run1StepBtn.setBounds(354, 334, 100, 23);
         contentPane.add(run1StepBtn);
 
-        JButton runAllBtn = new JButton("실행(all)");
+        runAllBtn = new JButton("실행(all)");
         runAllBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 allStep();
@@ -424,7 +487,7 @@ public class VisualSimulator extends JFrame {
         contentPane.add(closeBtn);
 
         JLabel DeviceLabel = new JLabel("사용중인 장치");
-        DeviceLabel.setBounds(365, 227, 82, 15);
+        DeviceLabel.setBounds(364, 227, 83, 15);
         contentPane.add(DeviceLabel);
 
         JTextPane runningDevice = new JTextPane();
