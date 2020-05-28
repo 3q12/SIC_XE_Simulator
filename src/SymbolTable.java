@@ -24,7 +24,8 @@ public class SymbolTable {
      *                매칭되는 주소값의 변경은 modifySymbol()을 통해서 이루어져야 한다.
      */
     public void putSymbol(String symbol, int address) {
-
+        this.symbolList.add(symbol);
+        this.addressList.add(address);
     }
 
     /**
@@ -45,7 +46,7 @@ public class SymbolTable {
      */
     public int search(String symbol) {
         int address = 0;
-        //...
+        address = this.addressList.get(this.symbolList.indexOf(symbol));
         return address;
     }
 

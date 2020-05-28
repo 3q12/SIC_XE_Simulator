@@ -29,7 +29,7 @@ public class ResourceManager {
      * 이것도 복잡하면 알아서 구현해서 사용해도 괜찮습니다.
      */
     HashMap<String, Object> deviceManager = new HashMap<String, Object>();
-    char[] memory = new char[65536]; // String으로 수정해서 사용하여도 무방함.
+    byte[] memory = new byte[131072]; // String으로 수정해서 사용하여도 무방함.
     int[] register = new int[10];
     double register_F;
 
@@ -100,13 +100,11 @@ public class ResourceManager {
      * @param num      데이터 개수
      * @return 가져오는 데이터
      */
-    public char[] getMemory(int location, int num) {
-        String retValue = "";
-/*        for(int i = 0; i<num;i++){
-            retValue+=this.memory[location+i];
-        }*/
-
-        return retValue.toCharArray();
+    public byte[] getMemory(int location, int num) {
+        byte[] retValue = new byte[num];
+        for (int i = 0; i < num; i++)
+            retValue[i] = this.memory[location + i];
+        return retValue;
     }
 
     /**
@@ -116,8 +114,9 @@ public class ResourceManager {
      * @param data   저장하려는 데이터
      * @param num    저장하는 데이터의 개수
      */
-    public void setMemory(int locate, char[] data, int num) {
-
+    public void setMemory(int locate, byte[] data, int num) {
+        for (int i = 0; i < num; i++)
+            this.memory[locate + i] = data[i];
     }
 
     /**
