@@ -41,9 +41,7 @@ public class ResourceManager {
     int finAddr;
     String usingDevice;
     File device;
-    byte[] deviceStream = new byte[4096];
-    int deviceCur;
-    FileWriter fw;
+    FileInputStream deviceInputStream;
     // 이외에도 필요한 변수 선언해서 사용할 것.
 
     /**
@@ -73,23 +71,12 @@ public class ResourceManager {
      */
     public void testDevice(String devName) {
         register[9]=0;
-        if(!devName.equals(usingDevice)){
-            try {
-                if(device != null){
-                    fw.close();
-                }
-                usingDevice = devName;
-                device = new File(devName);
-                FileInputStream deviceInputStream = new FileInputStream(device);
-                deviceInputStream.read(deviceStream);
-                deviceInputStream.close();
-                fw = new FileWriter(device);
-                fw.write("");
-                fw.flush();
-                deviceCur=0;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        usingDevice = devName;
+        device = new File(devName);
+        try {
+            deviceInputStream = new FileInputStream(device);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         register[9]=-1;
     }
@@ -102,11 +89,29 @@ public class ResourceManager {
      * @return 가져온 데이터
      */
     public byte readDevice(String devName, int num) {
-        System.out.println("reading device" + deviceStream[deviceCur]);
-        if(deviceCur<deviceStream.toString().length())
-            return deviceStream[deviceCur++];
-        else
+        int readByte = 0;
+        int dummy = 0;
+        String dummyString = "";
+        try {
+             readByte= deviceInputStream.read();
+             while (true){
+                 dummy = deviceInputStream.read();
+                 if(dummy == -1)
+                     break;
+                 dummyString += String.format("%c",dummy);
+             }
+
+             deviceInputStream.close();
+            FileWriter fw = new FileWriter(device);
+            fw.write(dummyString);
+            fw.flush();
+            fw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if(readByte== -1)
             return 0;
+        return (byte) readByte;
     }
 
     /**
@@ -118,8 +123,10 @@ public class ResourceManager {
      */
     public void writeDevice(String devName, char[] data, int num) {
         try {
+            FileWriter fw = new FileWriter(device,true);
             fw.write(data);
             fw.flush();
+            fw.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -181,9 +188,9 @@ public class ResourceManager {
     public byte[] intToByte(int data) {
         String dataString = String.format("%06X",data);
         byte[] ret = new byte[3];
-        ret[0]= (byte) Integer.parseInt(dataString.substring(0,2));
-        ret[1]= (byte) Integer.parseInt(dataString.substring(2,4));
-        ret[2]= (byte) Integer.parseInt(dataString.substring(4,6));
+        ret[0]= (byte) Integer.parseInt(dataString.substring(0,2),16);
+        ret[1]= (byte) Integer.parseInt(dataString.substring(2,4),16);
+        ret[2]= (byte) Integer.parseInt(dataString.substring(4,6),16);
         return ret;
     }
 

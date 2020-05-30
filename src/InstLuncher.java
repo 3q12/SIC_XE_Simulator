@@ -69,11 +69,7 @@ public class InstLuncher {
 
                 if (addressingMode == 1)
                     convertedData = originalData;
-                else if (addressingMode == 2){
-                    convertedData = rMgr.memory[originalData];/*
-                System.out.println(convertedData);*/
-                }
-                else if (addressingMode == 3)
+                else
                     convertedData = originalData + rMgr.register[8];
             if(convertedData<0){
                 convertedData = convertedData & 4095;
@@ -85,9 +81,9 @@ public class InstLuncher {
                 if (inst.equals("STL")) STL(convertedData);
                 else if (inst.equals("JSUB")) JSUB(convertedData);
                 else if (inst.equals("RSUB")) RSUB();
-                else if (inst.equals("J")) J(convertedData);
+                else if (inst.equals("J")) J(convertedData,addressingMode);
                 else if (inst.equals("LDT")) LDT(convertedData);
-                else if (inst.equals("LDA")) LDA(convertedData);
+                else if (inst.equals("LDA")) LDA(convertedData,addressingMode);
                 else if (inst.equals("STX")) STX(convertedData);
                 else if (inst.equals("TD")) TD(convertedData);
                 else if (inst.equals("RD")) RD();
@@ -121,9 +117,13 @@ public class InstLuncher {
     //Format 3/4
 
 
-    private void LDA(int data) {
-        byte[] loadedData = rMgr.getMemory(data,3);
-        rMgr.register[0] = Integer.parseInt(String.format("%02X%02X%02X",loadedData[0],loadedData[1],loadedData[2]),16);
+    private void LDA(int data,int addressingMode) {
+        if(addressingMode == 1){
+            rMgr.register[0] = data;
+        }else{
+            byte[] loadedData = rMgr.getMemory(data,3);
+            rMgr.register[0] = Integer.parseInt(String.format("%02X%02X%02X",loadedData[0],loadedData[1],loadedData[2]),16);
+        }
     }
 
     private void LDT(int data) {
@@ -131,10 +131,6 @@ public class InstLuncher {
         rMgr.register[5] = Integer.parseInt(String.format("%02X%02X%02X",loadedData[0],loadedData[1],loadedData[2]),16);
     }
     private void LDCH(int data ,Boolean useIndex) {
-/*
-        byte[] store = new byte[1];
-        store[0]= (byte) rMgr.register[0];
-        rMgr.setMemory(data+index,store,1);*/
         int index = 0;
         if(useIndex)
             index = rMgr.register[1];
@@ -181,8 +177,13 @@ public class InstLuncher {
         rMgr.register[2] = rMgr.register[8];
         rMgr.register[8] = data;
     }
-    private void J(int data) { //unstable
-        rMgr.register[8] = data;
+    private void J(int data,int addressingMode) { //unstable
+        if(addressingMode == 2){
+            rMgr.register[8]=rMgr.memory[data];
+            System.out.println(rMgr.memory[data]);
+        }
+        else
+            rMgr.register[8] = data;
     }
 
     private void RSUB() {
