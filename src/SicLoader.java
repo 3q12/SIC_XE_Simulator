@@ -83,7 +83,7 @@ public class SicLoader {
                             rMgr.programLength - secLen,
                             line.substring(9, line.length())));
                 } else if (recordCode == 'E') {
-                    if(line.length()==7)
+                    if (line.length() == 7)
                         rMgr.finAddr = rMgr.memCur;
                 }
             }

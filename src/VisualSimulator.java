@@ -58,7 +58,7 @@ public class VisualSimulator extends JFrame {
         logs.removeAll();
         run1StepBtn.setEnabled(true);
         runAllBtn.setEnabled(true);
-        instNum=0;
+        instNum = 0;
     }
 
     ;

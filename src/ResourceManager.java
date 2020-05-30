@@ -70,7 +70,7 @@ public class ResourceManager {
      * @param devName 확인하고자 하는 디바이스의 번호,또는 이름
      */
     public void testDevice(String devName) {
-        register[9]=0;
+        register[9] = 0;
         usingDevice = devName;
         device = new File(devName);
         try {
@@ -78,7 +78,7 @@ public class ResourceManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        register[9]=-1;
+        register[9] = -1;
     }
 
     /**
@@ -93,15 +93,15 @@ public class ResourceManager {
         int dummy = 0;
         String dummyString = "";
         try {
-             readByte= deviceInputStream.read();
-             while (true){
-                 dummy = deviceInputStream.read();
-                 if(dummy == -1)
-                     break;
-                 dummyString += String.format("%c",dummy);
-             }
+            readByte = deviceInputStream.read();
+            while (true) {
+                dummy = deviceInputStream.read();
+                if (dummy == -1)
+                    break;
+                dummyString += String.format("%c", dummy);
+            }
 
-             deviceInputStream.close();
+            deviceInputStream.close();
             FileWriter fw = new FileWriter(device);
             fw.write(dummyString);
             fw.flush();
@@ -109,7 +109,7 @@ public class ResourceManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if(readByte== -1)
+        if (readByte == -1)
             return 0;
         return (byte) readByte;
     }
@@ -123,7 +123,7 @@ public class ResourceManager {
      */
     public void writeDevice(String devName, char[] data, int num) {
         try {
-            FileWriter fw = new FileWriter(device,true);
+            FileWriter fw = new FileWriter(device, true);
             fw.write(data);
             fw.flush();
             fw.close();
@@ -165,7 +165,7 @@ public class ResourceManager {
      * @return 레지스터가 소지한 값
      */
     public int getRegister(int regNum) {
-        return 0;
+        return register[regNum];
 
     }
 
@@ -186,11 +186,11 @@ public class ResourceManager {
      * @return
      */
     public byte[] intToByte(int data) {
-        String dataString = String.format("%06X",data);
+        String dataString = String.format("%06X", data);
         byte[] ret = new byte[3];
-        ret[0]= (byte) Integer.parseInt(dataString.substring(0,2),16);
-        ret[1]= (byte) Integer.parseInt(dataString.substring(2,4),16);
-        ret[2]= (byte) Integer.parseInt(dataString.substring(4,6),16);
+        ret[0] = (byte) Integer.parseInt(dataString.substring(0, 2), 16);
+        ret[1] = (byte) Integer.parseInt(dataString.substring(2, 4), 16);
+        ret[2] = (byte) Integer.parseInt(dataString.substring(4, 6), 16);
         return ret;
     }
 
@@ -201,6 +201,6 @@ public class ResourceManager {
      * @return
      */
     public int byteToInt(byte[] data) {
-        return 0;
+        return Integer.parseInt(String.format("%02X%02X%02X", data[0], data[1], data[2]), 16);
     }
 }

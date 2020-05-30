@@ -1,4 +1,3 @@
-import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -55,7 +54,6 @@ public class SicSimulator {
         this.codeCur = 0;
         String line = "";
         BufferedReader bufReader;
-        int codeCur = 0, secLen = 0;
         ArrayList<SicLoader.Modify> mRec = new ArrayList<SicLoader.Modify>();
         try {
             bufReader = new BufferedReader(new FileReader(objectCode));
@@ -70,42 +68,32 @@ public class SicSimulator {
     /**
      * 1개의 instruction이 수행된 모습을 보인다.
      */
-    public Boolean oneStep() {/*
-        System.out.println(String.format("%02X", rMgr.memory[rMgr.register[8]]));*/
+    public Boolean oneStep() {
         int format = -1;
         String code, inst = "";
         byte opcode = (byte) (rMgr.memory[rMgr.register[8]] & ~3);
         format = instLuncher.getInstFormat(opcode);
         inst = instLuncher.getInst(opcode);
-/*        System.out.println(format);
-        System.out.println(inst);*/
         if (format == 1) {
             code = String.format("%02X", rMgr.memory[rMgr.register[8]++]);
             if (!codes.substring(codeCur, codeCur + 2).equals(code))
                 return false;
             codeCur += 2;
-            instLuncher.executeInst(opcode, null, 1,null);
+            instLuncher.executeInst(opcode, null, 1, null);
         } else if (format == 2) {
             code = String.format("%02X%02X", rMgr.memory[rMgr.register[8]++], rMgr.memory[rMgr.register[8]++]);
-            instLuncher.executeInst(opcode, code.substring(2, 4), 2,null);
+            instLuncher.executeInst(opcode, code.substring(2, 4), 2, null);
             codeCur += 4;
         } else {
-            //check nixbpe flag
             byte ni = 3;
             int addressingMode = ni & rMgr.memory[rMgr.register[8]];
-/*            if(addressingMode==1)
-                System.out.println("immediate");
-            if(addressingMode==2)
-                System.out.println("indirect");
-            if(addressingMode==3)
-                System.out.println("simple");*/
             if ((rMgr.memory[rMgr.register[8] + 1] & 16) != 16) {
                 code = String.format("%02X%02X%02X", rMgr.memory[rMgr.register[8]++], rMgr.memory[rMgr.register[8]++], rMgr.memory[rMgr.register[8]++]);
-                instLuncher.executeInst(opcode, code.substring(3, 6), 0,addressingMode);
+                instLuncher.executeInst(opcode, code.substring(3, 6), 0, addressingMode);
                 codeCur += 6;
             } else {
                 code = String.format("%02X%02X%02X%02X", rMgr.memory[rMgr.register[8]++], rMgr.memory[rMgr.register[8]++], rMgr.memory[rMgr.register[8]++], rMgr.memory[rMgr.register[8]++]);
-                instLuncher.executeInst(opcode, code.substring(3, 8), 0,addressingMode);
+                instLuncher.executeInst(opcode, code.substring(3, 8), 0, addressingMode);
                 codeCur += 8;
             }
         }
