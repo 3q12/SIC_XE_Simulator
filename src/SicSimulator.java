@@ -105,9 +105,8 @@ public class SicSimulator {
      * 남은 모든 instruction이 수행된 모습을 보인다.
      */
     public void allStep() {
-        System.out.println(rMgr.register[8]);
         oneStep();
-        while (!(rMgr.register[8] == rMgr.startAddr)) {
+        while (!(rMgr.getRegister(8) == rMgr.startAddr)) {
             oneStep();
         }
     }

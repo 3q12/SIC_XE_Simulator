@@ -112,7 +112,7 @@ public class VisualSimulator extends JFrame {
 
         if (sicSimulator.getInstructions().size() == 1) {
             instructions.add(sicSimulator.getInstructions().get(0));
-            if (sicSimulator.getInstructions().get(0).equals("3E2000")) {
+            if (resourceManager.getRegister(8) == resourceManager.startAddr) {
                 run1StepBtn.setEnabled(false);
                 runAllBtn.setEnabled(false);
             }
