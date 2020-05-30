@@ -25,14 +25,6 @@ public class SicSimulator {
     private String codes;
     private int codeCur;
 
-    /* bit 조작의 가독성을 위한 선언 */
-    public static final byte nFlag = 32;
-    public static final byte iFlag = 16;
-    public static final byte xFlag = 8;
-    public static final byte bFlag = 4;
-    public static final byte pFlag = 2;
-    public static final byte eFlag = 1;
-
     public SicSimulator(ResourceManager resourceManager) {
         // 필요하다면 초기화 과정 추가
         this.rMgr = resourceManager;
