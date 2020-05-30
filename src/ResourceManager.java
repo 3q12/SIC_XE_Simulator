@@ -53,6 +53,7 @@ public class ResourceManager {
         startAddr = 0;
         programLength = 0;
         memCur = 0;
+        usingDevice = "";
     }
 
     /**
@@ -60,7 +61,11 @@ public class ResourceManager {
      * 프로그램을 종료하거나 연결을 끊을 때 호출한다.
      */
     public void closeDevice() {
-
+        try {
+            deviceInputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -101,7 +106,7 @@ public class ResourceManager {
                 dummyString += String.format("%c", dummy);
             }
 
-            deviceInputStream.close();
+            closeDevice();
             FileWriter fw = new FileWriter(device);
             fw.write(dummyString);
             fw.flush();
