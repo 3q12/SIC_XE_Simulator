@@ -13,7 +13,6 @@ public class VisualSimulator extends JFrame {
     SicLoader sicLoader = new SicLoader(resourceManager);
     private JTextArea logs;
     private List instructions;
-    private int instNum;
     SicSimulator sicSimulator = new SicSimulator(resourceManager);
     private final JTextPane programName;
     private final JTextPane objStartAddr;
@@ -55,13 +54,12 @@ public class VisualSimulator extends JFrame {
         runningDevice.setText("");
         update();
         instructions.removeAll();
-        logs.removeAll();
+        logs.selectAll();
+        logs.replaceSelection("");
         run1StepBtn.setEnabled(true);
         runAllBtn.setEnabled(true);
-        instNum = 0;
     }
 
-    ;
 
     /**
      * 하나의 명령어만 수행할 것을 SicSimulator에 요청한다.
@@ -71,7 +69,6 @@ public class VisualSimulator extends JFrame {
         update();
     }
 
-    ;
 
     /**
      * 남아있는 모든 명령어를 수행할 것을 SicSimulator에 요청한다.
@@ -81,7 +78,6 @@ public class VisualSimulator extends JFrame {
         update();
     }
 
-    ;
 
     /**
      * 화면을 최신값으로 갱신하는 역할을 수행한다.
@@ -124,10 +120,9 @@ public class VisualSimulator extends JFrame {
         }
         sicSimulator.getLog().clear();
         sicSimulator.getInstructions().clear();
-        instructions.select(instNum++);
+        instructions.select(instructions.getItemCount() - 1);
     }
 
-    ;
 
     /**
      * Launch the application.
