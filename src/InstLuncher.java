@@ -40,8 +40,6 @@ public class InstLuncher {
 
     public void executeInst(byte opcode, String data, int format, Integer addressingMode) {
         String inst = instMap.get(opcode).instruction;
-/*        System.out.println("inExecute = " + inst);
-        System.out.println(data);*/
         if (format == 1) {
 
         } else {

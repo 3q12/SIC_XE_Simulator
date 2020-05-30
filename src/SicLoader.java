@@ -103,14 +103,6 @@ public class SicLoader {
                     changedData[j] = (byte) Integer.parseInt(calculatedData.substring(2 * j, 2 * j + 2), 16);
                 rMgr.setMemory(addr, changedData, 3);
             }
-            //for watch memory
-/*            for (int i = 0; i < rMgr.memCur; i++) {
-                System.out.print(String.format("%02X", rMgr.memory[i]));
-                if (i % 16 == 15)
-                    System.out.println();
-                else if (i % 4 == 3)
-                    System.out.print(" ");
-            }*/
         } catch (
                 IOException e) {
             e.printStackTrace();
