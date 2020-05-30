@@ -1,4 +1,4 @@
-import java.io.File;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -39,6 +39,9 @@ public class ResourceManager {
     int programLength;
     int memCur;
     int finAddr;
+    String usingDevice;
+    File device;
+    FileInputStream deviceInputStream;
     // 이외에도 필요한 변수 선언해서 사용할 것.
 
     /**
@@ -67,7 +70,15 @@ public class ResourceManager {
      * @param devName 확인하고자 하는 디바이스의 번호,또는 이름
      */
     public void testDevice(String devName) {
-
+        register[9] = 0;
+        usingDevice = devName;
+        device = new File(devName);
+        try {
+            deviceInputStream = new FileInputStream(device);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        register[9] = -1;
     }
 
     /**
@@ -77,9 +88,30 @@ public class ResourceManager {
      * @param num     가져오는 글자의 개수
      * @return 가져온 데이터
      */
-    public char[] readDevice(String devName, int num) {
-        return null;
+    public byte readDevice(String devName, int num) {
+        int readByte = 0;
+        int dummy = 0;
+        String dummyString = "";
+        try {
+            readByte = deviceInputStream.read();
+            while (true) {
+                dummy = deviceInputStream.read();
+                if (dummy == -1)
+                    break;
+                dummyString += String.format("%c", dummy);
+            }
 
+            deviceInputStream.close();
+            FileWriter fw = new FileWriter(device);
+            fw.write(dummyString);
+            fw.flush();
+            fw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (readByte == -1)
+            return 0;
+        return (byte) readByte;
     }
 
     /**
@@ -90,7 +122,14 @@ public class ResourceManager {
      * @param num     보내는 글자의 개수
      */
     public void writeDevice(String devName, char[] data, int num) {
-
+        try {
+            FileWriter fw = new FileWriter(device, true);
+            fw.write(data);
+            fw.flush();
+            fw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -126,7 +165,7 @@ public class ResourceManager {
      * @return 레지스터가 소지한 값
      */
     public int getRegister(int regNum) {
-        return 0;
+        return register[regNum];
 
     }
 
@@ -137,7 +176,7 @@ public class ResourceManager {
      * @param value  레지스터에 집어넣는 값
      */
     public void setRegister(int regNum, int value) {
-
+        register[regNum] = value;
     }
 
     /**
@@ -146,8 +185,13 @@ public class ResourceManager {
      * @param data
      * @return
      */
-    public char[] intToChar(int data) {
-        return null;
+    public byte[] intToByte(int data) {
+        String dataString = String.format("%06X", data);
+        byte[] ret = new byte[3];
+        ret[0] = (byte) Integer.parseInt(dataString.substring(0, 2), 16);
+        ret[1] = (byte) Integer.parseInt(dataString.substring(2, 4), 16);
+        ret[2] = (byte) Integer.parseInt(dataString.substring(4, 6), 16);
+        return ret;
     }
 
     /**
@@ -157,6 +201,6 @@ public class ResourceManager {
      * @return
      */
     public int byteToInt(byte[] data) {
-        return 0;
+        return Integer.parseInt(String.format("%02X%02X%02X", data[0], data[1], data[2]), 16);
     }
 }

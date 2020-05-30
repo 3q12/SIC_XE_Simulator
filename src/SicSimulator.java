@@ -1,4 +1,3 @@
-import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -21,11 +20,18 @@ import java.util.ArrayList;
 public class SicSimulator {
     ResourceManager rMgr;
     InstLuncher instLuncher;
-    int memCur;
     private ArrayList<String> log;
     private ArrayList<String> instructions;
     private String codes;
     private int codeCur;
+
+    /* bit 조작의 가독성을 위한 선언 */
+    public static final byte nFlag = 32;
+    public static final byte iFlag = 16;
+    public static final byte xFlag = 8;
+    public static final byte bFlag = 4;
+    public static final byte pFlag = 2;
+    public static final byte eFlag = 1;
 
     public SicSimulator(ResourceManager resourceManager) {
         // 필요하다면 초기화 과정 추가
@@ -44,12 +50,10 @@ public class SicSimulator {
         for (int i = 0; i < 10; i++)
             rMgr.register[i] = 0;
         rMgr.register_F = 0;
-        this.memCur = 0;
         this.codes = "";
         this.codeCur = 0;
         String line = "";
         BufferedReader bufReader;
-        int codeCur = 0, secLen = 0;
         ArrayList<SicLoader.Modify> mRec = new ArrayList<SicLoader.Modify>();
         try {
             bufReader = new BufferedReader(new FileReader(objectCode));
@@ -67,39 +71,29 @@ public class SicSimulator {
     public Boolean oneStep() {
         int format = -1;
         String code, inst = "";
-        byte opcode = (byte) (rMgr.memory[memCur] & ~3);
+        byte opcode = (byte) (rMgr.memory[rMgr.register[8]] & ~3);
         format = instLuncher.getInstFormat(opcode);
         inst = instLuncher.getInst(opcode);
         if (format == 1) {
-            memCur++;
-            code = String.format("%02X", rMgr.memory[memCur++]);
+            code = String.format("%02X", rMgr.memory[rMgr.register[8]++]);
             if (!codes.substring(codeCur, codeCur + 2).equals(code))
                 return false;
             codeCur += 2;
+            instLuncher.executeInst(opcode, null, 1, null);
         } else if (format == 2) {
-            memCur += 2;
-            code = String.format("%02X%02X", rMgr.memory[memCur++], rMgr.memory[memCur++]);
-            if (!codes.substring(codeCur, codeCur + 4).equals(code)){
-                memCur-=1;
-                return false;
-            }
+            code = String.format("%02X%02X", rMgr.memory[rMgr.register[8]++], rMgr.memory[rMgr.register[8]++]);
+            instLuncher.executeInst(opcode, code.substring(2, 4), 2, null);
             codeCur += 4;
         } else {
-            if ((rMgr.memory[memCur + 1] & 16) != 16) {
-
-                code = String.format("%02X%02X%02X", rMgr.memory[memCur++], rMgr.memory[memCur++], rMgr.memory[memCur++]);
-                if (!codes.substring(codeCur, codeCur + 6).equals(code)){
-                    memCur-=2;
-                    return false;
-                }
+            byte ni = 3;
+            int addressingMode = ni & rMgr.memory[rMgr.register[8]];
+            if ((rMgr.memory[rMgr.register[8] + 1] & 16) != 16) {
+                code = String.format("%02X%02X%02X", rMgr.memory[rMgr.register[8]++], rMgr.memory[rMgr.register[8]++], rMgr.memory[rMgr.register[8]++]);
+                instLuncher.executeInst(opcode, code.substring(3, 6), 0, addressingMode);
                 codeCur += 6;
             } else {
-
-                code = String.format("%02X%02X%02X%02X", rMgr.memory[memCur++], rMgr.memory[memCur++], rMgr.memory[memCur++], rMgr.memory[memCur++]);
-                if (!codes.substring(codeCur, codeCur + 3).equals(code.substring(0,3))){
-                    memCur-=3;
-                    return false;
-                }
+                code = String.format("%02X%02X%02X%02X", rMgr.memory[rMgr.register[8]++], rMgr.memory[rMgr.register[8]++], rMgr.memory[rMgr.register[8]++], rMgr.memory[rMgr.register[8]++]);
+                instLuncher.executeInst(opcode, code.substring(3, 8), 0, addressingMode);
                 codeCur += 8;
             }
         }
@@ -111,9 +105,9 @@ public class SicSimulator {
      * 남은 모든 instruction이 수행된 모습을 보인다.
      */
     public void allStep() {
-        System.out.println(rMgr.memCur);
+        System.out.println(rMgr.register[8]);
         oneStep();
-        while (!instructions.get(instructions.size()-1).equals("3E2000")) {
+        while (!(rMgr.register[8] == rMgr.startAddr)) {
             oneStep();
         }
     }

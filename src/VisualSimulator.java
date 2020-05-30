@@ -13,6 +13,7 @@ public class VisualSimulator extends JFrame {
     SicLoader sicLoader = new SicLoader(resourceManager);
     private JTextArea logs;
     private List instructions;
+    private int instNum;
     SicSimulator sicSimulator = new SicSimulator(resourceManager);
     private final JTextPane programName;
     private final JTextPane objStartAddr;
@@ -37,6 +38,7 @@ public class VisualSimulator extends JFrame {
     private final JTextPane swReg;
     private final JButton run1StepBtn;
     private final JButton runAllBtn;
+    private final JTextPane runningDevice;
 
     /**
      * 프로그램 로드 명령을 전달한다.
@@ -50,11 +52,13 @@ public class VisualSimulator extends JFrame {
         programLen.setText(String.format("%X", resourceManager.programLength));
         firstInstAddr.setText("000000");
         startAddrInMem.setText("0");
+        runningDevice.setText("");
         update();
         instructions.removeAll();
         logs.removeAll();
         run1StepBtn.setEnabled(true);
         runAllBtn.setEnabled(true);
+        instNum = 0;
     }
 
     ;
@@ -99,6 +103,7 @@ public class VisualSimulator extends JFrame {
         pcRegHex.setText(String.format("%06X", resourceManager.register[8]));
         pcRegDec.setText(String.format("%d", resourceManager.register[8]));
         swReg.setText(String.format("%06X", resourceManager.register[9]));
+        runningDevice.setText(resourceManager.usingDevice);
         if (sicSimulator.getLog().size() == 1)
             logs.append(sicSimulator.getLog().get(0));
         else
@@ -119,6 +124,7 @@ public class VisualSimulator extends JFrame {
         }
         sicSimulator.getLog().clear();
         sicSimulator.getInstructions().clear();
+        instructions.select(instNum++);
     }
 
     ;
@@ -420,7 +426,7 @@ public class VisualSimulator extends JFrame {
         Register.add(pcRegHex);
 
         JLabel SWLabel = new JLabel("SW(#9)");
-        SWLabel.setBounds(12, 217, 40, 15);
+        SWLabel.setBounds(12, 217, 42, 15);
         Register.add(SWLabel);
 
         swReg = new JTextPane();
@@ -490,7 +496,7 @@ public class VisualSimulator extends JFrame {
         DeviceLabel.setBounds(364, 227, 83, 15);
         contentPane.add(DeviceLabel);
 
-        JTextPane runningDevice = new JTextPane();
+        runningDevice = new JTextPane();
         runningDevice.setEditable(false);
         runningDevice.setBorder(new LineBorder(UIManager.getColor("Button.shadow")));
         runningDevice.setBackground(SystemColor.menu);
