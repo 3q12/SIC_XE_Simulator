@@ -41,6 +41,7 @@ public class VisualSimulator extends JFrame {
     private final JButton run1StepBtn;
     private final JButton runAllBtn;
     private final JTextPane runningDevice;
+    private final JTextPane targetAddr;
 
     /**
      * 프로그램 로드 명령을 전달한다.
@@ -90,6 +91,7 @@ public class VisualSimulator extends JFrame {
         this.updateMemoryBox();
         this.updateRegisterBox();
         runningDevice.setText(resourceManager.usingDevice);
+        targetAddr.setText(String.format("%08X",resourceManager.instAddr));
         this.updateLogBox();
         this.updateMemoryBox();
         // 변경된 메모리 하이라이팅
@@ -493,7 +495,7 @@ public class VisualSimulator extends JFrame {
         scrollPane.setVisible(true);
         contentPane.add(scrollPane);
 
-        JTextPane targetAddr = new JTextPane();
+        targetAddr = new JTextPane();
         targetAddr.setEditable(false);
         targetAddr.setBorder(new LineBorder(UIManager.getColor("Button.shadow")));
         targetAddr.setBackground(SystemColor.menu);

@@ -41,6 +41,7 @@ public class ResourceManager {
     int finAddr;
     String usingDevice;
     int changedMemAddr, changedMemSize;
+    int instAddr = 0;
     // 이외에도 필요한 변수 선언해서 사용할 것.
 
     /**

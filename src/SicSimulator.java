@@ -60,30 +60,44 @@ public class SicSimulator {
      * 1개의 instruction이 수행된 모습을 보인다.
      */
     public Boolean oneStep() {
+        rMgr.instAddr = rMgr.getRegister(8);
         int format = -1;
         String code, inst = "";
-        byte opcode = (byte) (rMgr.memory[rMgr.register[8]] & ~3);
+        byte opcode = (byte) (rMgr.getMemory(rMgr.getRegister(8),1)[0] & ~3);
         format = instLuncher.getInstFormat(opcode);
         inst = instLuncher.getInst(opcode);
         if (format == 1) {
-            code = String.format("%02X", rMgr.memory[rMgr.register[8]++]);
+            code = String.format("%02X", rMgr.getMemory(rMgr.getRegister(8),1)[0]);
+            rMgr.setRegister(8,rMgr.getRegister(8)+1);
             if (!codes.substring(codeCur, codeCur + 2).equals(code))
                 return false;
             codeCur += 2;
             instLuncher.executeInst(opcode, null, 1, null);
         } else if (format == 2) {
-            code = String.format("%02X%02X", rMgr.memory[rMgr.register[8]++], rMgr.memory[rMgr.register[8]++]);
+            code = String.format("%02X%02X",
+                    rMgr.getMemory(rMgr.getRegister(8),1)[0],
+                    rMgr.getMemory(rMgr.getRegister(8)+1,1)[0]);
+            rMgr.setRegister(8,rMgr.getRegister(8)+2);
             instLuncher.executeInst(opcode, code.substring(2, 4), 2, null);
             codeCur += 4;
         } else {
             byte ni = 3;
             int addressingMode = ni & rMgr.memory[rMgr.register[8]];
             if ((rMgr.memory[rMgr.register[8] + 1] & 16) != 16) {
-                code = String.format("%02X%02X%02X", rMgr.memory[rMgr.register[8]++], rMgr.memory[rMgr.register[8]++], rMgr.memory[rMgr.register[8]++]);
+                code = String.format("%02X%02X%02X",
+                        rMgr.getMemory(rMgr.getRegister(8),1)[0],
+                        rMgr.getMemory(rMgr.getRegister(8)+1,1)[0],
+                        rMgr.getMemory(rMgr.getRegister(8)+2,1)[0]);
+                rMgr.setRegister(8,rMgr.getRegister(8)+3);
                 instLuncher.executeInst(opcode, code.substring(3, 6), 0, addressingMode);
                 codeCur += 6;
             } else {
-                code = String.format("%02X%02X%02X%02X", rMgr.memory[rMgr.register[8]++], rMgr.memory[rMgr.register[8]++], rMgr.memory[rMgr.register[8]++], rMgr.memory[rMgr.register[8]++]);
+                code = String.format("%02X%02X%02X%02X",
+                        rMgr.getMemory(rMgr.getRegister(8),1)[0],
+                        rMgr.getMemory(rMgr.getRegister(8)+1,1)[0],
+                        rMgr.getMemory(rMgr.getRegister(8)+2,1)[0],
+                        rMgr.getMemory(rMgr.getRegister(8)+3,1)[0]);
+                rMgr.setRegister(8,rMgr.getRegister(8)+4);
                 instLuncher.executeInst(opcode, code.substring(3, 8), 0, addressingMode);
                 codeCur += 8;
             }
