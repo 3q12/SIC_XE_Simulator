@@ -213,7 +213,7 @@ public class VisualSimulator extends JFrame {
         openFileBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 Frame f = new Frame("Parent");
-                FileDialog dialog = new FileDialog(f, "열기", FileDialog.LOAD);
+                FileDialog dialog = new FileDialog(f, "\uC5F4\uAE30", FileDialog.LOAD);
                 dialog.setDirectory(".");
                 dialog.setVisible(true);
                 if (dialog.getFile() == null) return;
@@ -223,7 +223,7 @@ public class VisualSimulator extends JFrame {
                     File program = new File(dfName);
                     load(program);
                 } catch (Exception e2) {
-                    JOptionPane.showMessageDialog(f, "열기 오류" + e2.getMessage());
+                    JOptionPane.showMessageDialog(f, "\uC5F4\uAE30\uC624\uB958" + e2.getMessage());
                 }
                 FilePath.setText(dialog.getFile());
                 setTitle(dialog.getFile());
@@ -482,7 +482,7 @@ public class VisualSimulator extends JFrame {
         swReg.setBounds(57, 216, 142, 18);
         Register.add(swReg);
 
-        JLabel LogLabel = new JLabel("Log (명령어 수행 관련):");
+        JLabel LogLabel = new JLabel("Log (\uBA85\uB839\uC5B4 \uC218\uD589 \uAD00\uB828) :");
         LogLabel.setBounds(328, 437, 136, 15);
         contentPane.add(LogLabel);
 
@@ -512,7 +512,7 @@ public class VisualSimulator extends JFrame {
         instructions.setBounds(239, 227, 110, 198);
         contentPane.add(instructions);
 
-        run1StepBtn = new JButton("실행(1step)");
+        run1StepBtn = new JButton("\uC2E4\uD589(1step)");
         run1StepBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 oneStep();
@@ -521,7 +521,7 @@ public class VisualSimulator extends JFrame {
         run1StepBtn.setBounds(354, 334, 100, 23);
         contentPane.add(run1StepBtn);
 
-        runAllBtn = new JButton("실행(all)");
+        runAllBtn = new JButton("\uC2E4\uD589(all)");
         runAllBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 allStep();
@@ -530,7 +530,7 @@ public class VisualSimulator extends JFrame {
         runAllBtn.setBounds(354, 362, 100, 23);
         contentPane.add(runAllBtn);
 
-        JButton closeBtn = new JButton("종료");
+        JButton closeBtn = new JButton("\uC885\uB8CC");
         closeBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 System.exit(0);
@@ -539,7 +539,7 @@ public class VisualSimulator extends JFrame {
         closeBtn.setBounds(354, 390, 100, 23);
         contentPane.add(closeBtn);
 
-        JLabel DeviceLabel = new JLabel("사용중인 장치");
+        JLabel DeviceLabel = new JLabel("\uC0AC\uC6A9\uC911\uC778 \uC7A5\uCE58");
         DeviceLabel.setBounds(364, 227, 83, 15);
         contentPane.add(DeviceLabel);
 
