@@ -29,7 +29,7 @@ public class ResourceManager {
      * 이것도 복잡하면 알아서 구현해서 사용해도 괜찮습니다.
      */
     HashMap<String, Object> deviceManager = new HashMap<String, Object>();
-    byte[] memory = new byte[131072]; // String으로 수정해서 사용하여도 무방함.
+    byte[] memory = new byte[64000]; // String으로 수정해서 사용하여도 무방함.
     int[] register = new int[10];
     double register_F;
 
