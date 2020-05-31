@@ -42,6 +42,7 @@ public class ResourceManager {
     String usingDevice;
     File device;
     FileInputStream deviceInputStream;
+    int changedMemAddr, changedMemSize;
     // 이외에도 필요한 변수 선언해서 사용할 것.
 
     /**
@@ -54,6 +55,8 @@ public class ResourceManager {
         programLength = 0;
         memCur = 0;
         usingDevice = "";
+        changedMemAddr = 0;
+        changedMemSize = 0;
     }
 
     /**
@@ -159,6 +162,8 @@ public class ResourceManager {
      * @param num    저장하는 데이터의 개수
      */
     public void setMemory(int locate, byte[] data, int num) {
+        this.changedMemAddr = locate;
+        this.changedMemSize = num*2;
         for (int i = 0; i < num; i++)
             this.memory[locate + i] = data[i];
     }

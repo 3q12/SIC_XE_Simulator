@@ -2,6 +2,8 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
 import java.awt.*;
 import java.io.*;
 import java.awt.event.ActionListener;
@@ -13,6 +15,7 @@ public class VisualSimulator extends JFrame {
     SicLoader sicLoader = new SicLoader(resourceManager);
     private JTextArea logs;
     private List instructions;
+    JTextArea memory;
     SicSimulator sicSimulator = new SicSimulator(resourceManager);
     private final JTextPane programName;
     private final JTextPane objStartAddr;
@@ -52,6 +55,10 @@ public class VisualSimulator extends JFrame {
         firstInstAddr.setText("000000");
         startAddrInMem.setText("0");
         runningDevice.setText("");
+        memory.selectAll();
+        memory.replaceSelection("");
+        resourceManager.changedMemSize = -1;
+        resourceManager.changedMemAddr = -1;
         update();
         instructions.removeAll();
         logs.selectAll();
@@ -59,7 +66,6 @@ public class VisualSimulator extends JFrame {
         run1StepBtn.setEnabled(true);
         runAllBtn.setEnabled(true);
     }
-
 
     /**
      * 하나의 명령어만 수행할 것을 SicSimulator에 요청한다.
@@ -69,7 +75,6 @@ public class VisualSimulator extends JFrame {
         update();
     }
 
-
     /**
      * 남아있는 모든 명령어를 수행할 것을 SicSimulator에 요청한다.
      */
@@ -78,11 +83,85 @@ public class VisualSimulator extends JFrame {
         update();
     }
 
-
     /**
      * 화면을 최신값으로 갱신하는 역할을 수행한다.
      */
     public void update() {
+        this.updateMemoryBox();
+        this.updateRegisterBox();
+        runningDevice.setText(resourceManager.usingDevice);
+        this.updateLogBox();
+        this.updateInstructionBox();
+        this.updateMemoryBox();
+        // 변경된 메모리 하이라이팅
+        this.highlightMemory();
+    }
+
+    public void updateInstructionBox() {
+        if (sicSimulator.getInstructions().size() == 1) {
+            instructions.add(sicSimulator.getInstructions().get(0));
+            if (resourceManager.getRegister(8) == resourceManager.startAddr) {
+                run1StepBtn.setEnabled(false);
+                runAllBtn.setEnabled(false);
+            }
+        } else {
+            for (int i = 0; i < sicSimulator.getInstructions().size(); i++)
+                instructions.add(sicSimulator.getInstructions().get(i));
+            run1StepBtn.setEnabled(false);
+            runAllBtn.setEnabled(false);
+        }
+        sicSimulator.getInstructions().clear();
+        instructions.select(instructions.getItemCount() - 1);
+    }
+
+    public void updateLogBox() {
+        if (sicSimulator.getLog().size() == 1)
+            logs.append(sicSimulator.getLog().get(0));
+        else
+            for (int i = 0; i < sicSimulator.getLog().size(); i++)
+                logs.append(sicSimulator.getLog().get(i));
+        sicSimulator.getLog().clear();
+    }
+
+    public void updateMemoryBox() {
+        memory.selectAll();
+        memory.replaceSelection("");
+        for (int i = 0; i < resourceManager.memCur; i += 16) {
+            byte[] mem = resourceManager.getMemory(i, 16);
+            memory.append(String.format("%06X  %02X%02X%02X%02X  %02X%02X%02X%02X  %02X%02X%02X%02X  %02X%02X%02X%02X\n",
+                    i, mem[0], mem[1], mem[2], mem[3],
+                    mem[4], mem[5], mem[6], mem[7],
+                    mem[8], mem[9], mem[10], mem[11],
+                    mem[12], mem[13], mem[14], mem[15]));
+        }
+    }
+
+    public void highlightMemory() {
+        if (resourceManager.changedMemAddr != -1) {
+            int addr = (resourceManager.changedMemAddr / 16) * 47
+                    + 8 + 10 * ((resourceManager.changedMemAddr % 16) / 4)
+                    + ((resourceManager.changedMemAddr % 16) % 4) * 2;
+            memory.getHighlighter().removeAllHighlights();
+            try {
+                for (int i = 0; i < resourceManager.changedMemSize; i += 2) {
+                    if ((addr % 47 + i) % 10 == 6) {
+                        resourceManager.changedMemSize += 2;
+                        i += 2;
+                    }
+                    memory.getHighlighter().addHighlight(addr + i, addr + i + 2,
+                            new DefaultHighlighter.DefaultHighlightPainter(Color.CYAN));
+                }
+            } catch (BadLocationException e) {
+                e.printStackTrace();
+            }
+            memory.select(addr, addr + resourceManager.changedMemSize);
+            resourceManager.changedMemAddr = -1;
+            resourceManager.changedMemSize = -1;
+        } else
+            memory.select(0, 0);
+    }
+
+    public void updateRegisterBox() {
         aRegHex.setText(String.format("%06X", resourceManager.register[0]));
         aRegDec.setText(String.format("%d", resourceManager.register[0]));
         xRegHex.setText(String.format("%06X", resourceManager.register[1]));
@@ -99,30 +178,7 @@ public class VisualSimulator extends JFrame {
         pcRegHex.setText(String.format("%06X", resourceManager.register[8]));
         pcRegDec.setText(String.format("%d", resourceManager.register[8]));
         swReg.setText(String.format("%06X", resourceManager.register[9]));
-        runningDevice.setText(resourceManager.usingDevice);
-        if (sicSimulator.getLog().size() == 1)
-            logs.append(sicSimulator.getLog().get(0));
-        else
-            for (int i = 0; i < sicSimulator.getLog().size(); i++)
-                logs.append(sicSimulator.getLog().get(i));
-
-        if (sicSimulator.getInstructions().size() == 1) {
-            instructions.add(sicSimulator.getInstructions().get(0));
-            if (resourceManager.getRegister(8) == resourceManager.startAddr) {
-                run1StepBtn.setEnabled(false);
-                runAllBtn.setEnabled(false);
-            }
-        } else {
-            for (int i = 0; i < sicSimulator.getInstructions().size(); i++)
-                instructions.add(sicSimulator.getInstructions().get(i));
-            run1StepBtn.setEnabled(false);
-            runAllBtn.setEnabled(false);
-        }
-        sicSimulator.getLog().clear();
-        sicSimulator.getInstructions().clear();
-        instructions.select(instructions.getItemCount() - 1);
     }
-
 
     /**
      * Launch the application.
@@ -156,15 +212,10 @@ public class VisualSimulator extends JFrame {
         openFileBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 Frame f = new Frame("Parent");
-                // 1. FileDialog를 열어 불러올 파일 지정
                 FileDialog dialog = new FileDialog(f, "열기", FileDialog.LOAD);
                 dialog.setDirectory(".");
                 dialog.setVisible(true);
-                // 2. FileDialog가 비정상 종료되었을때
-
                 if (dialog.getFile() == null) return;
-
-                // 3. 파일 열기, TextArea에 뿌려주기
 
                 try {
                     String dfName = dialog.getDirectory() + dialog.getFile();
@@ -173,7 +224,6 @@ public class VisualSimulator extends JFrame {
                 } catch (Exception e2) {
                     JOptionPane.showMessageDialog(f, "열기 오류" + e2.getMessage());
                 }
-                // 4. 파일명 표시하기
                 FilePath.setText(dialog.getFile());
                 setTitle(dialog.getFile());
             }
@@ -432,12 +482,13 @@ public class VisualSimulator extends JFrame {
         Register.add(swReg);
 
         JLabel LogLabel = new JLabel("Log (명령어 수행 관련):");
-        LogLabel.setBounds(12, 437, 136, 15);
+        LogLabel.setBounds(328, 437, 136, 15);
         contentPane.add(LogLabel);
 
         logs = new JTextArea();
+        logs.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(logs);
-        scrollPane.setBounds(12, 462, 446, 137);
+        scrollPane.setBounds(328, 462, 135, 137);
         scrollPane.setVisible(true);
         contentPane.add(scrollPane);
 
@@ -497,5 +548,16 @@ public class VisualSimulator extends JFrame {
         runningDevice.setBackground(SystemColor.menu);
         runningDevice.setBounds(370, 250, 65, 18);
         contentPane.add(runningDevice);
+
+        JLabel MemoryLabel = new JLabel("Memory");
+        MemoryLabel.setBounds(5, 438, 136, 15);
+        contentPane.add(MemoryLabel);
+
+        memory = new JTextArea();
+        memory.setEditable(false);
+        JScrollPane scrollPane_mem = new JScrollPane(memory);
+        scrollPane_mem.setBounds(6, 464, 318, 135);
+        scrollPane_mem.setVisible(true);
+        contentPane.add(scrollPane_mem);
     }
 }
