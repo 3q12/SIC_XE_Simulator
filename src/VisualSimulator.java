@@ -101,6 +101,7 @@ public class VisualSimulator extends JFrame {
         if (sicSimulator.getInstructions().size() == 1) {
             instructions.add(sicSimulator.getInstructions().get(0));
             if (resourceManager.getRegister(8) == resourceManager.startAddr) {
+                resourceManager.closeDevice();
                 run1StepBtn.setEnabled(false);
                 runAllBtn.setEnabled(false);
             }

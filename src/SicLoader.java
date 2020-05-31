@@ -39,6 +39,7 @@ public class SicLoader {
         String line = "";
         BufferedReader bufReader;
         int codeCur = 0, secLen = 0;
+        byte[] data = new byte[1];
         ArrayList<Modify> mRec = new ArrayList<Modify>();
         try {
             bufReader = new BufferedReader(new FileReader(objectCode));
@@ -66,16 +67,19 @@ public class SicLoader {
                             buf += line.charAt(i);
                 } else if (recordCode == 'T') {
                     while (codeCur != Integer.parseInt(line.substring(1, 7), 16)) {
-                        rMgr.memory[rMgr.memCur++] = 0;
+                        data[0] = 0;
+                        rMgr.setMemory(rMgr.memCur++, data, 1);
                         codeCur++;
                     }
                     for (int i = 9; i < line.length(); i += 2) {
-                        rMgr.memory[rMgr.memCur++] = (byte) Integer.parseInt(line.substring(i, i + 2), 16);
+                        data[0] = (byte) Integer.parseInt(line.substring(i, i + 2), 16);
+                        rMgr.setMemory(rMgr.memCur++, data, 1);
                         codeCur++;
                     }
                 } else if (recordCode == 'M') {
                     while (codeCur != secLen) {
-                        rMgr.memory[rMgr.memCur++] = 0;
+                        data[0] = 0;
+                        rMgr.setMemory(rMgr.memCur++, data, 1);
                         codeCur++;
                     }
                     mRec.add(new Modify(Integer.parseInt(line.substring(1, 7), 16),

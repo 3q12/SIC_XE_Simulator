@@ -29,7 +29,7 @@ public class ResourceManager {
      * 이것도 복잡하면 알아서 구현해서 사용해도 괜찮습니다.
      */
     HashMap<String, Object> deviceManager = new HashMap<String, Object>();
-    byte[] memory = new byte[64000]; // String으로 수정해서 사용하여도 무방함.
+    byte[] memory = new byte[64000];
     int[] register = new int[10];
     double register_F;
 
@@ -40,8 +40,6 @@ public class ResourceManager {
     int memCur;
     int finAddr;
     String usingDevice;
-    File device;
-    FileInputStream deviceInputStream;
     int changedMemAddr, changedMemSize;
     // 이외에도 필요한 변수 선언해서 사용할 것.
 
@@ -57,6 +55,14 @@ public class ResourceManager {
         usingDevice = "";
         changedMemAddr = 0;
         changedMemSize = 0;
+        File F1 = new File("F1");
+        File Five = new File("05");
+        try {
+            deviceManager.put("F1", new FileInputStream(F1));
+            deviceManager.put("05", new FileWriter(Five));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -64,8 +70,11 @@ public class ResourceManager {
      * 프로그램을 종료하거나 연결을 끊을 때 호출한다.
      */
     public void closeDevice() {
+        FileInputStream fis = (FileInputStream) deviceManager.get("F1");
+        FileWriter fw = (FileWriter) deviceManager.get("05");
         try {
-            deviceInputStream.close();
+            fis.close();
+            fw.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -78,15 +87,11 @@ public class ResourceManager {
      * @param devName 확인하고자 하는 디바이스의 번호,또는 이름
      */
     public void testDevice(String devName) {
-        register[9] = 0;
         usingDevice = devName;
-        device = new File(devName);
-        try {
-            deviceInputStream = new FileInputStream(device);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        register[9] = -1;
+        if (deviceManager.get(devName) == null)
+            register[9] = 0;
+        else
+            register[9] = -1;
     }
 
     /**
@@ -98,22 +103,9 @@ public class ResourceManager {
      */
     public byte readDevice(String devName, int num) {
         int readByte = 0;
-        int dummy = 0;
-        String dummyString = "";
+        FileInputStream fis = (FileInputStream) deviceManager.get(devName);
         try {
-            readByte = deviceInputStream.read();
-            while (true) {
-                dummy = deviceInputStream.read();
-                if (dummy == -1)
-                    break;
-                dummyString += String.format("%c", dummy);
-            }
-
-            closeDevice();
-            FileWriter fw = new FileWriter(device);
-            fw.write(dummyString);
-            fw.flush();
-            fw.close();
+            readByte = fis.read();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -131,10 +123,9 @@ public class ResourceManager {
      */
     public void writeDevice(String devName, char[] data, int num) {
         try {
-            FileWriter fw = new FileWriter(device, true);
+            FileWriter fw = (FileWriter) deviceManager.get(devName);
             fw.write(data);
             fw.flush();
-            fw.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -163,7 +154,7 @@ public class ResourceManager {
      */
     public void setMemory(int locate, byte[] data, int num) {
         this.changedMemAddr = locate;
-        this.changedMemSize = num*2;
+        this.changedMemSize = num * 2;
         for (int i = 0; i < num; i++)
             this.memory[locate + i] = data[i];
     }
