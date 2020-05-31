@@ -1,1 +1,10 @@
-System Programming Project 2020
+Loader
+A system program that performs the loading function
+Many loaders support relocation & linking
+Some systems have
+a Linker (or Linkage Editor) to perform the linking operations
+& a separate loader to handle relocation and loading
+In most cases, all the program translators produce object programs
+in the same format
+One system loader or linker can be used
+regardless of the original source programming language

@@ -1,5 +1,3 @@
-// instruction에 따라 동작을 수행하는 메소드를 정의하는 클래스
-
 import java.io.*;
 import java.util.HashMap;
 

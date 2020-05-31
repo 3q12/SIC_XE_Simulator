@@ -91,10 +91,10 @@ public class VisualSimulator extends JFrame {
         this.updateRegisterBox();
         runningDevice.setText(resourceManager.usingDevice);
         this.updateLogBox();
-        this.updateInstructionBox();
         this.updateMemoryBox();
         // 변경된 메모리 하이라이팅
         this.highlightMemory();
+        this.updateInstructionBox();
     }
 
     public void updateInstructionBox() {
@@ -229,12 +229,12 @@ public class VisualSimulator extends JFrame {
                 setTitle(dialog.getFile());
             }
         });
-        openFileBtn.setBounds(206, 17, 68, 23);
+        openFileBtn.setBounds(210, 17, 68, 23);
         contentPane.add(openFileBtn);
 
 
         FilePath.setEditable(false);
-        FilePath.setBounds(78, 17, 116, 23);
+        FilePath.setBounds(78, 17, 125, 23);
         contentPane.add(FilePath);
         FilePath.setColumns(10);
 

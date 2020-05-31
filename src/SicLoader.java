@@ -100,9 +100,11 @@ public class SicLoader {
                 String newData = String.format("%06X", rMgr.symtabList.search(modify.symbol.substring(1)));
                 String calculatedData = "";
                 if (modify.symbol.substring(0, 1).equals("+"))
-                    calculatedData = String.format("%06X", Integer.parseInt(originalData, 16) + Integer.parseInt(newData, 16));
+                    calculatedData = String.format("%06X",
+                            Integer.parseInt(originalData, 16) + Integer.parseInt(newData, 16));
                 else if (modify.symbol.substring(0, 1).equals("-"))
-                    calculatedData = String.format("%06X", Integer.parseInt(originalData, 16) - Integer.parseInt(newData, 16));
+                    calculatedData = String.format("%06X",
+                            Integer.parseInt(originalData, 16) - Integer.parseInt(newData, 16));
                 for (int j = 0; j < 3; j++)
                     changedData[j] = (byte) Integer.parseInt(calculatedData.substring(2 * j, 2 * j + 2), 16);
                 rMgr.setMemory(addr, changedData, 3);

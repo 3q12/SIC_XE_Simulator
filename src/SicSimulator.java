@@ -26,7 +26,6 @@ public class SicSimulator {
     private int codeCur;
 
     public SicSimulator(ResourceManager resourceManager) {
-        // 필요하다면 초기화 과정 추가
         this.rMgr = resourceManager;
         this.instLuncher = new InstLuncher(resourceManager);
         this.log = new ArrayList<String>();
