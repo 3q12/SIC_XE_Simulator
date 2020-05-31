@@ -15,7 +15,7 @@ public class InstLuncher {
         this.rMgr = resourceManager;
         this.instMap = new HashMap<Byte, Instruction>();
         try {
-            File file = new File("./bin/inst.data");
+            File file = new File("inst.data");
             FileReader fileReader = new FileReader(file);
             BufferedReader bufReader = new BufferedReader(fileReader);
             String line = "";
