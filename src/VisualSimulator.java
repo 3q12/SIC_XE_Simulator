@@ -5,9 +5,9 @@ import javax.swing.border.TitledBorder;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import java.awt.*;
-import java.io.*;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
 
 public class VisualSimulator extends JFrame {
 
@@ -44,7 +44,7 @@ public class VisualSimulator extends JFrame {
     private final JTextPane targetAddr;
 
     /**
-     * ÇÁ·Î±×·¥ ·Îµå ¸í·ÉÀ» Àü´ÞÇÑ´Ù.
+     * ï¿½ï¿½ï¿½Î±×·ï¿½ ï¿½Îµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
      */
     public void load(File program) {
         resourceManager.initializeResource();
@@ -69,7 +69,7 @@ public class VisualSimulator extends JFrame {
     }
 
     /**
-     * ÇÏ³ªÀÇ ¸í·É¾î¸¸ ¼öÇàÇÒ °ÍÀ» SicSimulator¿¡ ¿äÃ»ÇÑ´Ù.
+     * ï¿½Ï³ï¿½ï¿½ï¿½ ï¿½ï¿½É¾î¸¸ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ SicSimulatorï¿½ï¿½ ï¿½ï¿½Ã»ï¿½Ñ´ï¿½.
      */
     public void oneStep() {
         sicSimulator.oneStep();
@@ -77,7 +77,7 @@ public class VisualSimulator extends JFrame {
     }
 
     /**
-     * ³²¾ÆÀÖ´Â ¸ðµç ¸í·É¾î¸¦ ¼öÇàÇÒ °ÍÀ» SicSimulator¿¡ ¿äÃ»ÇÑ´Ù.
+     * ï¿½ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½É¾î¸¦ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ SicSimulatorï¿½ï¿½ ï¿½ï¿½Ã»ï¿½Ñ´ï¿½.
      */
     public void allStep() {
         sicSimulator.allStep();
@@ -85,7 +85,7 @@ public class VisualSimulator extends JFrame {
     }
 
     /**
-     * È­¸éÀ» ÃÖ½Å°ªÀ¸·Î °»½ÅÇÏ´Â ¿ªÇÒÀ» ¼öÇàÇÑ´Ù.
+     * È­ï¿½ï¿½ï¿½ï¿½ ï¿½Ö½Å°ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
      */
     public void update() {
         this.updateMemoryBox();
@@ -94,7 +94,7 @@ public class VisualSimulator extends JFrame {
         targetAddr.setText(String.format("%08X",resourceManager.instAddr));
         this.updateLogBox();
         this.updateMemoryBox();
-        // º¯°æµÈ ¸Þ¸ð¸® ÇÏÀÌ¶óÀÌÆÃ
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¸ï¿½ ï¿½ï¿½ï¿½Ì¶ï¿½ï¿½ï¿½ï¿½ï¿½
         this.highlightMemory();
         this.updateInstructionBox();
     }
